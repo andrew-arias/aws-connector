@@ -23,12 +23,9 @@
  */
 package com.triage.openicf.connectors.aws;
 
-import org.identityconnectors.common.Assertions;
 import org.identityconnectors.common.StringUtil;
-import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
-
 
 /**
  * Extends the {@link AbstractConfiguration} class to provide all the necessary
@@ -37,79 +34,46 @@ import org.identityconnectors.framework.spi.ConfigurationProperty;
  */
 public class AWSConfiguration extends AbstractConfiguration {
 
+	// Exposed configuration properties.
+	private String clientID;
 
-    // Exposed configuration properties.
+	private String clientSecret;
 
-    /**
-     * The connector to connect to.
-     */
-    private String host;
+	/**
+	 * Constructor.
+	 */
+	public AWSConfiguration() {
+	}
 
-    /**
-     * The Remote user to authenticate with.
-     */
-    private String remoteUser = null;
+	@ConfigurationProperty(order = 1, displayMessageKey = "clientID.display", groupMessageKey = "basic.group", helpMessageKey = "clientID.help", required = true, confidential = true)
+	public String getKey() {
+		return clientID;
+	}
 
-    /**
-     * The Password to authenticate with.
-     */
-    private GuardedString password = null;
+	public void setKey(String clientID) {
+		this.clientID = clientID;
+	}
 
+	@ConfigurationProperty(order = 1, displayMessageKey = "clientSecret.display", groupMessageKey = "basic.group", helpMessageKey = "clientSecret.help", required = true, confidential = true)
+	public String getSecret() {
+		return clientSecret;
+	}
 
-    /**
-     * Constructor.
-     */
-    public AWSConfiguration() {
+	public void setSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
+	}
 
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void validate() {
+		if (StringUtil.isBlank(clientID)) {
+			throw new IllegalArgumentException("Client ID cannot be null or empty.");
+		}
 
-
-    @ConfigurationProperty(order = 1, displayMessageKey = "host.display",
-            groupMessageKey = "basic.group", helpMessageKey = "host.help",
-            required = true, confidential = false)
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-
-    @ConfigurationProperty(order = 2, displayMessageKey = "remoteUser.display",
-            groupMessageKey = "basic.group", helpMessageKey = "remoteUser.help",
-            required = true, confidential = false)
-    public String getRemoteUser() {
-        return remoteUser;
-    }
-
-    public void setRemoteUser(String remoteUser) {
-        this.remoteUser = remoteUser;
-    }
-
-    @ConfigurationProperty(order = 3, displayMessageKey = "password.display",
-            groupMessageKey = "basic.group", helpMessageKey = "password.help",
-            confidential = true)
-    public GuardedString getPassword() {
-        return password;
-    }
-
-    public void setPassword(GuardedString password) {
-        this.password = password;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void validate() {
-        if (StringUtil.isBlank(host)) {
-            throw new IllegalArgumentException("Host cannot be null or empty.");
-        }
-
-        Assertions.blankCheck(remoteUser, "remoteUser");
-
-        Assertions.nullCheck(password, "password");
-    }
-
+		if (StringUtil.isBlank(clientSecret)) {
+			throw new IllegalArgumentException("Client Secret cannot be null or empty.");
+		}
+	}
 
 }

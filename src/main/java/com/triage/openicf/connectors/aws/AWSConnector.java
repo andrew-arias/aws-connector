@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
@@ -45,14 +46,16 @@ import org.identityconnectors.framework.common.objects.SearchResult;
 import org.identityconnectors.framework.common.objects.Uid;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
-import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+import org.identityconnectors.framework.spi.PoolableConnector;
 import org.identityconnectors.framework.spi.SearchResultsHandler;
 import org.identityconnectors.framework.spi.operations.CreateOp;
 import org.identityconnectors.framework.spi.operations.DeleteOp;
 import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateOp;
+
+import com.triage.openicf.connectorsaws.client.AWSClient;
 
 /**
  * Main implementation of the AWS Connector.
@@ -61,7 +64,7 @@ import org.identityconnectors.framework.spi.operations.UpdateOp;
 @ConnectorClass(
         displayNameKey = "AWS.connector.display",
         configurationClass = AWSConfiguration.class)
-public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<String>, TestOp, UpdateOp {
+public class AWSConnector implements PoolableConnector, CreateOp, DeleteOp, SearchOp<String>, TestOp, UpdateOp {
 
     /**
      * Setup logging for the {@link AWSConnector}.
@@ -75,6 +78,7 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
     private AWSConfiguration configuration;
 
     private Schema schema = null;
+    private AWSClient client = null;
 
     /**
      * Gets the Configuration context for this connector.
@@ -93,6 +97,11 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
      */
     public void init(final Configuration configuration) {
         this.configuration = (AWSConfiguration) configuration;
+        try{
+        	client = new AWSClient(this.configuration);
+        }catch (Exception e) {
+        	logger.error(e, "Failed to initialize connection to AWS resource");
+        }
     }
 
     /**
@@ -219,5 +228,15 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
         }
         return uidAfterUpdate;
     }
+
+	@Override
+	public void checkAlive() {
+		try{
+			client.testConnection();
+		}catch(Exception e){
+			logger.warn(e, "checkAlive failed");
+			throw new ConnectorException("checkAlive() failed", e);
+		}
+	}
 
 }
