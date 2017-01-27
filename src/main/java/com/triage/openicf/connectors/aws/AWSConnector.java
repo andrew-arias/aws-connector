@@ -196,8 +196,12 @@ public class AWSConnector implements PoolableConnector, CreateOp, DeleteOp, Sear
      * {@inheritDoc}
      */
     public void test() {
-        logger.ok("Test works well");
-    }
+		try{
+			client.testConnection();
+		}catch(Exception e){
+			logger.warn(e, "Test failed failed");
+			throw new ConnectorException("Test failed failed", e);
+		}    }
 
     /**
      * {@inheritDoc}
@@ -227,6 +231,13 @@ public class AWSConnector implements PoolableConnector, CreateOp, DeleteOp, Sear
                     + objectClass.getObjectClassValue() + " is not supported");
         }
         return uidAfterUpdate;
+    }
+    
+    public Schema schema() {
+        if (null == schema) {
+
+        }
+        return schema;
     }
 
 	@Override
