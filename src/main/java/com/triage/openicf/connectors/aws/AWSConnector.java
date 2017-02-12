@@ -55,7 +55,7 @@ import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateOp;
 
-import com.triage.openicf.connectorsaws.client.AWSClient;
+import com.triage.openicf.connectors.aws.client.AWSClient;
 
 /**
  * Main implementation of the AWS Connector.

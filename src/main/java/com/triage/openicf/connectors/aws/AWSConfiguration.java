@@ -36,31 +36,40 @@ public class AWSConfiguration extends AbstractConfiguration {
 
 	// Exposed configuration properties.
 	private String clientID;
-
 	private String clientSecret;
+	private String region;
 
 	/**
 	 * Constructor.
 	 */
 	public AWSConfiguration() {
 	}
-
+	
 	@ConfigurationProperty(order = 1, displayMessageKey = "clientID.display", groupMessageKey = "basic.group", helpMessageKey = "clientID.help", required = true, confidential = true)
-	public String getKey() {
+	public String getClientID() {
 		return clientID;
 	}
 
-	public void setKey(String clientID) {
+	public void setClientID(String clientID) {
 		this.clientID = clientID;
 	}
-
-	@ConfigurationProperty(order = 1, displayMessageKey = "clientSecret.display", groupMessageKey = "basic.group", helpMessageKey = "clientSecret.help", required = true, confidential = true)
-	public String getSecret() {
+	
+	@ConfigurationProperty(order = 2, displayMessageKey = "clientSecret.display", groupMessageKey = "basic.group", helpMessageKey = "clientSecret.help", required = true, confidential = true)
+	public String getClientSecret() {
 		return clientSecret;
 	}
 
-	public void setSecret(String clientSecret) {
+	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
+	}
+
+	@ConfigurationProperty(order = 3, displayMessageKey = "awsRegion.display", groupMessageKey = "basic.group", helpMessageKey = "awsRegion.help", required = true, confidential = false)
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 	/**
@@ -73,6 +82,10 @@ public class AWSConfiguration extends AbstractConfiguration {
 
 		if (StringUtil.isBlank(clientSecret)) {
 			throw new IllegalArgumentException("Client Secret cannot be null or empty.");
+		}
+		
+		if (StringUtil.isBlank(region)) {
+			throw new IllegalArgumentException("AWS Region cannot be null or empty.");
 		}
 	}
 
