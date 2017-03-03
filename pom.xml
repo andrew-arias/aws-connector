@@ -75,9 +75,10 @@
 
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.11.86</version>
+			<artifactId>aws-java-sdk-iam</artifactId>
+			<version>1.11.98</version>
 		</dependency>
+
 		<!-- Provided Dependencies -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
