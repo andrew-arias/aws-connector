@@ -45,7 +45,7 @@ public class AWSConfiguration extends AbstractConfiguration {
 	public AWSConfiguration() {
 	}
 	
-	@ConfigurationProperty(order = 1, displayMessageKey = "clientID.display", groupMessageKey = "basic.group", helpMessageKey = "clientID.help", required = true, confidential = true)
+	@ConfigurationProperty(order = 1, displayMessageKey = "clientID.display", groupMessageKey = "basic.group", helpMessageKey = "clientID.help", required = true, confidential = false)
 	public String getClientID() {
 		return clientID;
 	}

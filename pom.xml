@@ -102,6 +102,7 @@
 			<artifactId>connector-test-common</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -112,7 +113,7 @@
 				<configuration>
 					<instructions>
 						<Export-Package>com.triage.openicf.connectors.aws.*</Export-Package>
-						<Embed-Dependency>aws*</Embed-Dependency>
+						<Embed-Dependency>aws*, gson, json</Embed-Dependency>
 					</instructions>
 				</configuration>
 			</plugin>

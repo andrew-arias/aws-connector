@@ -7,15 +7,25 @@ import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientB
 import com.triage.openicf.connectors.aws.AWSConfiguration;
 
 public class AWSClient {
-
-	private AWSConfiguration config;
+	private static AmazonIdentityManagement aws;
+	private static AWSConfiguration config;
 
 	public AWSClient(final AWSConfiguration config) {
 		this.config = config;
 	}
-	
-	public void testConnection() {
+
+	private void login() {
 		BasicAWSCredentials cred = new BasicAWSCredentials(config.getClientID(), config.getClientSecret());
-		AmazonIdentityManagement aws = AmazonIdentityManagementClientBuilder.standard().withRegion(config.getRegion()).withCredentials(new AWSStaticCredentialsProvider(cred)).build();
+		aws = AmazonIdentityManagementClientBuilder.standard().withRegion(config.getRegion())
+				.withCredentials(new AWSStaticCredentialsProvider(cred)).build();
 	}
+
+	public void testConnection() {
+		login();
+	}
+
+	public static AmazonIdentityManagement getAWS() {
+		return aws;
+	}
+	
 }

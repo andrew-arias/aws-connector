@@ -27,17 +27,13 @@ package com.triage.openicf.connectors.aws;
 import java.util.Locale;
 import java.util.Set;
 
-import org.identityconnectors.common.CollectionUtil;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
 import org.identityconnectors.framework.common.objects.AttributeUtil;
 import org.identityconnectors.framework.common.objects.AttributesAccessor;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
-import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 import org.identityconnectors.framework.common.objects.Name;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
@@ -46,13 +42,11 @@ import org.identityconnectors.framework.common.objects.OperationOptions;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.Schema;
 import org.identityconnectors.framework.common.objects.SchemaBuilder;
-import org.identityconnectors.framework.common.objects.SearchResult;
 import org.identityconnectors.framework.common.objects.Uid;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
-import org.identityconnectors.framework.spi.SearchResultsHandler;
 import org.identityconnectors.framework.spi.operations.CreateOp;
 import org.identityconnectors.framework.spi.operations.DeleteOp;
 import org.identityconnectors.framework.spi.operations.SchemaOp;
@@ -147,7 +141,7 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
 	 */
 	public void delete(final ObjectClass objectClass, final Uid uid, final OperationOptions options) {
 		if (ObjectClass.ACCOUNT.equals(objectClass) || ObjectClass.GROUP.equals(objectClass)) {
-			// do real delete here
+			userOps.deleteUser(uid.getName());
 		} else {
 			logger.warn("Delete of type {0} is not supported", configuration.getConnectorMessages()
 					.format(objectClass.getDisplayNameKey(), objectClass.getObjectClassValue()));
@@ -167,20 +161,8 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
 	 * {@inheritDoc}
 	 */
 	public void executeQuery(ObjectClass objectClass, String query, ResultsHandler handler, OperationOptions options) {
-		final ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
-		builder.setUid("3f50eca0-f5e9-11e3-a3ac-0800200c9a66");
-		builder.setName("Foo");
-		builder.addAttribute(AttributeBuilder.buildEnabled(true));
-
-		for (ConnectorObject connectorObject : CollectionUtil.newSet(builder.build())) {
-			if (!handler.handle(connectorObject)) {
-				// Stop iterating because the handler stopped processing
-				break;
-			}
-		}
-		if (options.getPageSize() != null && 0 < options.getPageSize()) {
-			logger.info("Paged Search was requested");
-			((SearchResultsHandler) handler).handleResult(new SearchResult("0", 0));
+		if(objectClass.equals(ObjectClass.ACCOUNT)){
+			userOps.queryUser(query, handler, options);
 		}
 	}
 
@@ -232,7 +214,6 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
 		builder.setType(ObjectClass.ACCOUNT_NAME);
 		builder.addAttributeInfo(Name.INFO);
 		builder.addAttributeInfo(AttributeInfoBuilder.define("userName").setRequired(true).build());
-		builder.addAttributeInfo(AttributeInfoBuilder.define("role").setRequired(true).build());
 		ObjectClassInfo oci = builder.build();
 		schemaBuilder.defineObjectClass(oci);
 		this.schema = schemaBuilder.build();
