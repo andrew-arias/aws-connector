@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.api.ConnectorFacade;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.objects.Attribute;
@@ -39,6 +40,7 @@ import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
 import org.identityconnectors.framework.common.objects.OperationOptions;
+import org.identityconnectors.framework.common.objects.OperationOptionsBuilder;
 import org.identityconnectors.framework.common.objects.ResultsHandler;
 import org.identityconnectors.framework.common.objects.Schema;
 import org.identityconnectors.framework.common.objects.SchemaBuilder;
@@ -141,7 +143,7 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
 	 */
 	public void delete(final ObjectClass objectClass, final Uid uid, final OperationOptions options) {
 		if (ObjectClass.ACCOUNT.equals(objectClass) || ObjectClass.GROUP.equals(objectClass)) {
-			userOps.deleteUser(uid.getName());
+			userOps.deleteUser(uid.getUidValue());
 		} else {
 			logger.warn("Delete of type {0} is not supported", configuration.getConnectorMessages()
 					.format(objectClass.getDisplayNameKey(), objectClass.getObjectClassValue()));
@@ -193,7 +195,7 @@ public class AWSConnector implements Connector, CreateOp, DeleteOp, SearchOp<Str
 		}
 
 		if (ObjectClass.ACCOUNT.equals(objectClass)) {
-
+			userOps.upgradeUser(uid.getName());
 		} else if (ObjectClass.GROUP.is(objectClass.getObjectClassValue())) {
 			if (attributesAccessor.hasAttribute("members")) {
 				throw new InvalidAttributeValueException("Requested to update a read only attribute");

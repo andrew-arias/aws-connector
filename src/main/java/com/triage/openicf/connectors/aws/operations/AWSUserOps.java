@@ -17,6 +17,8 @@ import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
 import com.amazonaws.services.identitymanagement.model.GetUserRequest;
 import com.amazonaws.services.identitymanagement.model.GetUserResult;
 import com.amazonaws.services.identitymanagement.model.ListUsersRequest;
+import com.amazonaws.services.identitymanagement.model.RemoveUserFromGroupRequest;
+import com.amazonaws.services.identitymanagement.model.RemoveUserFromGroupResult;
 import com.amazonaws.services.identitymanagement.model.UpdateUserRequest;
 import com.amazonaws.services.identitymanagement.model.UpdateUserResult;
 import com.amazonaws.services.identitymanagement.model.User;
@@ -41,7 +43,7 @@ public class AWSUserOps {
 			LOGGER.info("Attempting to create user " + userName + " in AWS.");
 			result = aws.createUser(new CreateUserRequest(userName));
 			aws.addUserToGroup(new AddUserToGroupRequest("Admins", userName));
-			uid = new Uid(result.getUser().getUserId());
+			uid = new Uid(result.getUser().getUserName());
 			LOGGER.info("User " + userName + "created in AWS.");
 			return uid;
 		} catch (Exception e) {
@@ -57,6 +59,8 @@ public class AWSUserOps {
 	public void deleteUser(String userName) {
 		AmazonIdentityManagement aws = AWSClient.getAWS();
 		try {
+			RemoveUserFromGroupRequest groupRequest = new RemoveUserFromGroupRequest("Admins", userName);
+			aws.removeUserFromGroup(groupRequest);
 			DeleteUserRequest request = new DeleteUserRequest(userName);
 			aws.deleteUser(request);
 			LOGGER.info("User " + userName + "deleted from AWS.");
@@ -116,7 +120,7 @@ public class AWSUserOps {
 		}
 		try {
 			ConnectorObjectBuilder cob = new ConnectorObjectBuilder();
-			Uid uid = new Uid(user.getUserId());
+			Uid uid = new Uid(user.getUserName());
 			String userPrincipalName = user.getUserName();
 			cob.setUid(uid);
 			cob.setName(userPrincipalName);
