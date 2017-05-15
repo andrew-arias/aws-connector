@@ -1,2 +1,2 @@
 # aws-connector
-Connector use with OpenIDM and AWS IAM service
+Connector for use with OpenIDM and AWS's IAM service
